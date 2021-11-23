@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "ws": "^8.3.0"
+  },
+  "name": "discord-ws",
+  "version": "1.0.0",
+  "main": "discord-ws.js",
+  "license": "MIT"
+}
