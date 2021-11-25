@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+const JSON5 = require('json5')
+
 async function setState(user, info) {
   const stateName = `d-${user.name}`
   let color = '#000000'
@@ -58,12 +60,12 @@ async function getScriptDirPath() {
 
 async function readJson(path) {
   const fs = require('fs').promises
-  return JSON.parse(await fs.readFile(path))
+  return JSON5.parse(await fs.readFile(path))
 }
 
 async function writeJson(path, obj) {
   const fs = require('fs').promises
-  await fs.writeFile(path, JSON.stringify(obj))
+  await fs.writeFile(path, JSON5.stringify(obj))
 }
 
 const WebSocket = require('ws')
@@ -248,7 +250,7 @@ class DiscordWebSocket {
 }
 
 ;(async function () {
-  const infoPath = `${await getScriptDirPath()}/info.json`
+  const infoPath = `${await getScriptDirPath()}/info.json5`
   const info = await readJson(infoPath)
   info.path = infoPath
 
