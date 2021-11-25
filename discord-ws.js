@@ -96,7 +96,6 @@ class DiscordWebSocket {
     showData('sent', obj)
   }
   async start() {
-    this.heartbeatIntervalId = null
     this.heartbeatReceived = true
     await new Promise((resolve) => (this.ws.onopen = resolve))
     if (this.isReconnect) {
@@ -240,7 +239,7 @@ class DiscordWebSocket {
     this.heartbeatReceived = false
   }
   async sendingHeartbeat(interval) {
-    clearInterval(this.heartbeatInterval)
+    clearInterval(this.heartbeatIntervalId)
     this.heartbeatIntervalId = setInterval(() => this.sendHeartbeat(), interval)
   }
 }
