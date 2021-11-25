@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const JSON5 = require('json5')
+const { getScriptDir } = require('get-script-dir')
 
 async function setState(user, info) {
   const stateName = `d-${user.name}`
@@ -42,20 +43,6 @@ function showData(description, data) {
   }
   console.log('\n' + description)
   console.dir(data, { depth: null })
-}
-
-async function getScriptDirPath() {
-  const fs = require('fs')
-  const scriptPath = process.argv[1]
-  const scriptRealPath = await new Promise((resolve, reject) =>
-    fs.realpath(scriptPath, (err, result) => {
-      if (err) reject(err)
-      else resolve(result)
-    })
-  )
-  const path = require('path')
-  const scriptDirPath = path.dirname(scriptRealPath)
-  return scriptDirPath
 }
 
 async function readJson(path) {
@@ -250,7 +237,7 @@ class DiscordWebSocket {
 }
 
 ;(async function () {
-  const infoPath = `${await getScriptDirPath()}/info.json5`
+  const infoPath = `${await getScriptDir()}/info.json5`
   const info = await readJson(infoPath)
   info.path = infoPath
 
