@@ -35,9 +35,10 @@ async function setState(user, info) {
 
 function showData(description, data) {
   if ([1, 11].includes(data.op)) {
+    process.stdout.write(data.op.toString() + ', ')
     return
   }
-  console.log(description)
+  console.log('\n' + description)
   console.dir(data, { depth: null })
 }
 
@@ -71,6 +72,7 @@ class DiscordWebSocket {
     this.constructorMethod(url, info, intents)
   }
   constructorMethod(url, info, intents, isReconnect = false) {
+    this.ws?.close?.()
     this.url = url
     this.ws = new WebSocket(this.url)
     this.ws.onmessage = (...args) => this.onmessage(...args)
@@ -87,6 +89,7 @@ class DiscordWebSocket {
       }
     }
     this.isReconnect = isReconnect
+    this.start()
   }
   send(obj) {
     this.ws.send(JSON.stringify(obj))
@@ -166,6 +169,8 @@ class DiscordWebSocket {
       this.onOpZero(data)
     } else if (data.op === 7) {
       this.onReconnect()
+    } else if (data.op === 9) {
+      this.constructorMethod(this.url, this.info, this.intents, false)
     } else if (data.op === 10) {
       this.sendingHeartbeat(data.d.heartbeat_interval)
     } else if (data.op === 11) {
@@ -228,7 +233,7 @@ class DiscordWebSocket {
   }
   sendHeartbeat() {
     if (!this.heartbeatReceived) {
-      this.identify()
+      constructorMethod(this.url, this.info, this.intents, false)
     }
     const heartbeat = { op: 1, d: this.lastSequence }
     this.send(heartbeat)
@@ -253,5 +258,4 @@ class DiscordWebSocket {
   }).reduce((sum, intent) => sum | intent)
 
   const dws = new DiscordWebSocket(url, info, intents)
-  dws.start()
 })()
