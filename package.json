@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "get-script-dir": "https://github.com/482F/get-script-dir.git",
     "json5": "^2.2.0",
     "ws": "^8.3.0"
   },
