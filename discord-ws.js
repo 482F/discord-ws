@@ -72,20 +72,23 @@ class DiscordWebSocket {
     this.constructorMethod(url, info, intents)
   }
   constructorMethod(url, info, intents, isReconnect = false) {
-    this.ws?.close?.()
+    if (isReconnect) {
+      this.ws.close()
+    }
     this.url = url
     this.ws = new WebSocket(this.url)
     this.ws.onmessage = (...args) => this.onmessage(...args)
-    this.lastSequence = null
     this.intents = intents
     this.info = info
-    this.watchUsers = {}
-    for (const [id, name] of Object.entries(this.info.watchUsers)) {
-      this.watchUsers[id] = {
-        name,
-        isJoined: false,
-        activity: null,
-        state: 'offline',
+    if (!isReconnect) {
+      this.watchUsers = {}
+      for (const [id, name] of Object.entries(this.info.watchUsers)) {
+        this.watchUsers[id] = {
+          name,
+          isJoined: false,
+          activity: null,
+          state: 'offline',
+        }
       }
     }
     this.isReconnect = isReconnect
