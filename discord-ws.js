@@ -8,10 +8,12 @@ async function setState(user, info) {
   let color = '#000000'
   let joinedBody = ''
   let body = 'オフライン'
+  let icon = ''
   if (user.isJoined) {
     color = '#008800'
     joinedBody = 'JOINED '
     body = 'オンライン'
+    icon = 'mdi-phone'
   } else {
     color =
       {
@@ -20,6 +22,13 @@ async function setState(user, info) {
         idle: '#cc9900',
         dnd: '#e24f38',
       }[user.state] ?? '#000000'
+    icon =
+      {
+        offline: 'mdi-power-plug-off-outline',
+        online: 'mdi-checkbox-blank-circle',
+        idle: 'mdi-power-sleep',
+        dnd: 'mdi-close-octagon',
+      }[user.state] ?? ''
   }
   body =
     user.activity ??
@@ -33,7 +42,12 @@ async function setState(user, info) {
   console.log(message)
 
   const { execFile } = require('child_process')
-  execFile(info.stateViewerPath, ['set', message])
+  execFile(info.stateViewerPath, [
+    `name=${stateName}`,
+    `body=${body}`,
+    `color=${color}`,
+    `icon=${icon}`,
+  ])
 }
 
 function showData(description, data) {
