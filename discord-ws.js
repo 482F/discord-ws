@@ -52,9 +52,15 @@ async function setState(user, info) {
 
 function showData(description, data) {
   if ([1, 11].includes(data.op)) {
-    process.stdout.write(data.op.toString() + ', ')
+    if (this.heartbeatCount.send !== 0) {
+      require('readline').moveCursor(process.stdout, 0, -2)
+    }
+    this.heartbeatCount[{ 1: 'send', 11: 'receive' }[data.op]] += 1
+    console.log(`send:    ${this.heartbeatCount.send}`)
+    console.log(`receive: ${this.heartbeatCount.receive}`)
     return
   }
+  this.heartbeatCount = { send: 0, receive: 0 }
   console.log('\n' + description)
   console.dir(data, { depth: null })
 }
@@ -76,7 +82,9 @@ class DiscordWebSocket {
   }
   constructorMethod(url, info, intents, isReconnect = false) {
     if (isReconnect) {
-      this.ws.close()
+      try {
+        this.ws.close()
+      } catch {}
     }
     this.url = url
     this.ws = new WebSocket(this.url)
@@ -95,11 +103,16 @@ class DiscordWebSocket {
       }
     }
     this.isReconnect = isReconnect
+    this.heartbeatCount = { send: 0, receive: 0 }
     this.start()
   }
   send(obj) {
-    this.ws.send(JSON.stringify(obj))
-    showData('sent', obj)
+    try {
+      this.ws.send(JSON.stringify(obj))
+      showData('sent', obj)
+    } catch {
+      this.constructorMethod(this.url, this.info, this.intents, true)
+    }
   }
   async start() {
     this.heartbeatReceived = true
@@ -238,7 +251,7 @@ class DiscordWebSocket {
   }
   sendHeartbeat() {
     if (!this.heartbeatReceived) {
-      constructorMethod(this.url, this.info, this.intents, false)
+      this.constructorMethod(this.url, this.info, this.intents, false)
     }
     const heartbeat = { op: 1, d: this.lastSequence }
     this.send(heartbeat)
@@ -246,6 +259,7 @@ class DiscordWebSocket {
   }
   async sendingHeartbeat(interval) {
     clearInterval(this.heartbeatIntervalId)
+    this.heartbeatReceived = true
     this.heartbeatIntervalId = setInterval(() => this.sendHeartbeat(), interval)
   }
 }
