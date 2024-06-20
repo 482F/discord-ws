@@ -6,11 +6,13 @@ const { getScriptDir } = require('get-script-dir')
 async function setState(user, info) {
   const stateName = `d-${user.name}`
   let color = '#000000'
+  let backgroundColor = '#ffffff'
   let joinedBody = ''
   let body = 'オフライン'
   let icon = ''
   if (user.isJoined) {
     color = '#008800'
+    backgroundColor = '#bbffbb'
     joinedBody = 'JOINED '
     body = 'オンライン'
     icon = 'mdi-phone'
@@ -46,6 +48,7 @@ async function setState(user, info) {
     `name=${stateName}`,
     `body=${body}`,
     `color=${color}`,
+    `backgroundColor=${backgroundColor}`,
     `icon=${icon}`,
   ])
 }
